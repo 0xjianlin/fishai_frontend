@@ -4,7 +4,8 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:8000/api'
+// const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:8000/api';
+const API_URL = 'https://fishai-backend-production.up.railway.app/api';
 
 export default new Vuex.Store({
   state: {

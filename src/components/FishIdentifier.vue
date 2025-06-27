@@ -287,7 +287,8 @@ export default {
         this.selectedFiles.forEach(file => {
           formData.append('files', file);
         });
-        const response = await fetch(`${process.env.VUE_APP_API_URL || 'http://localhost:8000/api'}/identify`, {
+        // const response = await fetch(`${process.env.VUE_APP_API_URL || 'http://localhost:8000/api'}/identify`, {
+        const response = await fetch(`https://fishai-backend-production.up.railway.app/api/identify`, {
           method: 'POST',
           body: formData
         });
@@ -336,7 +337,8 @@ export default {
     },
     async fetchSpeciesList() {
       try {
-        const response = await fetch(`${process.env.VUE_APP_API_URL || 'http://localhost:8000/api'}/species`);
+        // const response = await fetch(`${process.env.VUE_APP_API_URL || 'http://localhost:8000/api'}/species`);
+        const response = await fetch(`https://fishai-backend-production.up.railway.app/api/species`);
         const data = await response.json();
         this.speciesList = data.species || [];
       } catch (err) {
