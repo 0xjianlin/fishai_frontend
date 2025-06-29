@@ -89,7 +89,7 @@
                 <div v-for="(detection, dIdx) in imageResult.detections" :key="dIdx" class="species-result-row">
                   <img
                     class="species-result-img"
-                    :src="detection.image_url || 'https://res.cloudinary.com/db2nnwhav/image/upload/v1750966874/test/mdoobsgipr9j8go4tcm8.jpg'"
+                    :src="detection.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png'"
                     alt="Species image"
                   />
                   <div class="species-result-content">
@@ -178,7 +178,7 @@
           class="species-card"
         >
           <img
-            :src="species.image_url || 'https://res.cloudinary.com/db2nnwhav/image/upload/v1750966874/test/mdoobsgipr9j8go4tcm8.jpg'"
+            :src="species.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png'"
             alt="Species image"
             class="species-image"
           />
@@ -287,8 +287,7 @@ export default {
         this.selectedFiles.forEach(file => {
           formData.append('files', file);
         });
-        // const response = await fetch(`${process.env.VUE_APP_API_URL || 'http://localhost:8000/api'}/identify`, {
-        const response = await fetch(`https://fishai-backend-production.up.railway.app/api/identify`, {
+        const response = await fetch(`${process.env.VUE_APP_API_URL}/identify`, {
           method: 'POST',
           body: formData
         });
@@ -337,8 +336,7 @@ export default {
     },
     async fetchSpeciesList() {
       try {
-        // const response = await fetch(`${process.env.VUE_APP_API_URL || 'http://localhost:8000/api'}/species`);
-        const response = await fetch(`https://fishai-backend-production.up.railway.app/api/species`);
+        const response = await fetch(`${process.env.VUE_APP_API_URL}/species`);
         const data = await response.json();
         this.speciesList = data.species || [];
       } catch (err) {
