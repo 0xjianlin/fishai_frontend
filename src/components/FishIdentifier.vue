@@ -171,7 +171,11 @@
         />
         <button @click="fetchSpeciesList" class="main-btn">🔄 Refresh List</button>
       </div>
-      <div v-if="speciesList.length" class="species-grid">
+      <div v-if="speciesLoading" class="spinner-container">
+        <div class="spinner"></div>
+        <div>Loading species list...</div>
+      </div>
+      <div v-if="speciesList.length && !speciesLoading" class="species-grid">
         <div
           v-for="species in filteredSpecies"
           :key="species.id"
@@ -231,7 +235,8 @@ export default {
       modalLoading: false,
       modalError: '',
       speciesList: [],
-      speciesSearch: ''
+      speciesSearch: '',
+      speciesLoading: false
     };
   },
   computed: {
@@ -335,6 +340,7 @@ export default {
       this.currentImage = null;
     },
     async fetchSpeciesList() {
+      this.speciesLoading = true;
       try {
         const response = await fetch(`${process.env.VUE_APP_API_URL}/species`);
         const data = await response.json();
@@ -345,6 +351,8 @@ export default {
           title: 'Error',
           text: 'Failed to fetch species list.'
         });
+      } finally {
+        this.speciesLoading = false;
       }
     }
   }
