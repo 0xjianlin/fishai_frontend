@@ -184,11 +184,13 @@
           <img
             :src="species.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png'"
             alt="Species image"
-            class="species-image"
+            class="species-image cursor-pointer"
+            @click.stop="openSpeciesImageModal(species.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png')"
           />
           <div class="species-card-content">
-            <div class="species-common">{{ species.name }}</div>
-            <div class="species-sci"><em>{{ species.species_id }}</em></div>
+            <div class="species-common">Common Name: {{ species.name }}</div>
+            <div class="species-sci"><em>Scientific Name: {{ species.species_id }}</em></div>
+            <div v-if="species.location" class="species-sci"><em>Location: {{ species.location }}</em></div>
             <div class="regulation-info" style="margin-top: 8px;">
               <template v-if="species.more_info && Object.keys(species.more_info).length">
                 <div><strong>Regulations:</strong> {{ species.more_info.regulatory_reference }}</div>
@@ -211,6 +213,13 @@
       </div>
       <div v-else class="species-empty">
         <em>No species found. Click 'Refresh List' to load.</em>
+      </div>
+
+      <!-- Species List Image Modal -->
+      <div v-if="showSpeciesImageModal" class="modal-overlay fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50" @click.self="closeSpeciesImageModal">
+        <div class="image-modal bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl shadow-2xl max-w-4xl w-full border border-cyan-400/30">
+          <img :src="speciesImage" alt="Preview" class="modal-img-only max-w-full max-h-[80vh] object-contain rounded-lg mx-auto" />
+        </div>
       </div>
     </div>
   </div>
@@ -236,18 +245,30 @@ export default {
       modalError: '',
       speciesList: [],
       speciesSearch: '',
-      speciesLoading: false
+      speciesLoading: false,
+      showSpeciesImageModal: false,
+      speciesImage: null
     };
   },
   computed: {
     filteredSpecies() {
-      if (!this.speciesSearch) return this.speciesList;
-      const q = this.speciesSearch.toLowerCase();
-      return this.speciesList.filter(
-        s =>
-          s.name.toLowerCase().includes(q) ||
-          (s.species_id && s.species_id.toLowerCase().includes(q))
-      );
+      let filtered = this.speciesList;
+      if (this.speciesSearch) {
+        const q = this.speciesSearch.toLowerCase();
+        filtered = filtered.filter(
+          s =>
+            s.name.toLowerCase().includes(q) ||
+            (s.species_id && s.species_id.toLowerCase().includes(q))
+        );
+      }
+      // Sort: California first, then others
+      return filtered.slice().sort((a, b) => {
+        const aIsCA = a.location && a.location.toLowerCase().includes('california');
+        const bIsCA = b.location && b.location.toLowerCase().includes('california');
+        if (aIsCA && !bIsCA) return -1;
+        if (!aIsCA && bIsCA) return 1;
+        return 0;
+      });
     }
   },
   watch: {
@@ -338,6 +359,14 @@ export default {
     closeImageModal() {
       this.showImageModal = false;
       this.currentImage = null;
+    },
+    openSpeciesImageModal(img) {
+      this.speciesImage = img;
+      this.showSpeciesImageModal = true;
+    },
+    closeSpeciesImageModal() {
+      this.showSpeciesImageModal = false;
+      this.speciesImage = null;
     },
     async fetchSpeciesList() {
       this.speciesLoading = true;
