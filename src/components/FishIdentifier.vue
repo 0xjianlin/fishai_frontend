@@ -75,7 +75,7 @@
         <div class="results-container">
           <div v-for="(imageResult, idx) in results" :key="idx" class="result-block">
             <div class="result-header">
-              <strong>Image:</strong> {{ imageResult.filename || selectedFiles[idx]?.name }}
+              {{ imageResult.filename || selectedFiles[idx]?.name }}
             </div>
             <img
               v-if="filePreviews[idx]"
@@ -91,6 +91,7 @@
                     class="species-result-img"
                     :src="detection.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png'"
                     alt="Species image"
+                    @click="openImageModal(detection.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png')"
                   />
                   <div class="species-result-content">
                     <div class="species-names-row">
@@ -258,16 +259,12 @@ export default {
         filtered = filtered.filter(
           s =>
             s.name.toLowerCase().includes(q) ||
-            (s.species_id && s.species_id.toLowerCase().includes(q))
+            (s.name && s.name.toLowerCase().includes(q))
         );
       }
-      // Sort: California first, then others
+      // Sort by species name A → Z
       return filtered.slice().sort((a, b) => {
-        const aIsCA = a.location && a.location.toLowerCase().includes('california');
-        const bIsCA = b.location && b.location.toLowerCase().includes('california');
-        if (aIsCA && !bIsCA) return -1;
-        if (!aIsCA && bIsCA) return 1;
-        return 0;
+        return a.name.localeCompare(b.name);
       });
     }
   },
@@ -286,15 +283,18 @@ export default {
       this.handleFiles(e.dataTransfer.files);
     },
     handleFiles(fileList) {
-      this.selectedFiles = Array.from(fileList);
+      const files = Array.from(fileList);
+      this.selectedFiles = files;
       this.results = [];
       this.error = '';
       this.showSuccess = false;
-      this.filePreviews = [];
-      this.selectedFiles.forEach(file => {
+      this.filePreviews = Array(files.length); // pre-size the array
+
+      files.forEach((file, idx) => {
         const reader = new FileReader();
-        reader.onload = e => {
-          this.filePreviews.push(e.target.result);
+        reader.onload = (e) => {
+          // Vue 3 reactivity handles this fine — no need for this.$set
+          this.filePreviews[idx] = e.target.result;
         };
         reader.readAsDataURL(file);
       });
