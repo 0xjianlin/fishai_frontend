@@ -17,12 +17,6 @@ const routes = [
     path: '/species',
     name: 'Species',
     component: () => import('../views/Species.vue')
-  },
-  {
-    path: '/species/:id',
-    name: 'SpeciesDetail',
-    component: () => import('../views/SpeciesDetail.vue'),
-    props: true
   }
 ]
 
