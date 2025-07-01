@@ -178,8 +178,8 @@
       </div>
       <div v-if="speciesList.length && !speciesLoading" class="species-grid">
         <div
-          v-for="species in filteredSpecies"
-          :key="species.id"
+          v-for="(species, idx) in filteredSpecies"
+          :key="idx"
           class="species-card"
         >
           <img
@@ -189,7 +189,7 @@
             @click.stop="openSpeciesImageModal(species.image_url || 'https://res.cloudinary.com/dtz92sayc/image/upload/v1751039809/fish_images/ofioj3ku15l2rz5t9e24.png')"
           />
           <div class="species-card-content">
-            <div class="species-common">Common Name: {{ species.name }}</div>
+            <div class="species-common">{{ idx + 1 }}. Common Name: {{ species.name }}</div>
             <div class="species-sci"><em>Scientific Name: {{ species.species_id }}</em></div>
             <div v-if="species.location" class="species-sci"><em>Location: {{ species.location }}</em></div>
             <div class="regulation-info" style="margin-top: 8px;">
